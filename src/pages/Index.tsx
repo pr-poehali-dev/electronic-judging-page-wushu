@@ -60,8 +60,8 @@ const kits = [
     name: 'Беспроводная',
     icon: 'Wifi',
     tag: 'Мобильность',
-    price: 'Узнать цену',
-    period: '',
+    price: '150 000',
+    period: '₽',
     desc: 'Для выездных турниров и залов без кабельной инфраструктуры',
     hardware: ['5 беспроводных судейских пультов', '3 светодиодные лампы результата (Wi-Fi)', 'Центральный роутер с точкой доступа', 'Планшет-табло для главного судьи'],
     software: ['Синхронизация до 50 мс', 'Работает в локальной сети без интернета', 'Заряда батарей на 8 часов'],
@@ -71,8 +71,8 @@ const kits = [
     name: 'Проводная',
     icon: 'Cable',
     tag: 'Надёжность',
-    price: 'Узнать цену',
-    period: '',
+    price: '180 000',
+    period: '₽',
     desc: 'Для стационарных площадок и официальных соревнований',
     hardware: ['5 проводных судейских пультов (USB)', '3 лампы результата (кабель)', 'Центральный коммутатор', 'Планшет-табло для главного судьи'],
     software: ['Синхронизация до 5 мс', 'Нет радиопомех — стабильность 100%', 'Не требует зарядки пультов'],
@@ -82,8 +82,8 @@ const kits = [
     name: 'Офлайн',
     icon: 'HardDrive',
     tag: 'Автономность',
-    price: 'Узнать цену',
-    period: '',
+    price: '200 000',
+    period: '₽',
     desc: 'Полностью автономный комплект без сетевой инфраструктуры',
     hardware: ['5 автономных пультов с дисплеем', '3 лампы результата (Bluetooth)', 'Мини-сервер на базе Raspberry Pi', 'Экранный модуль табло (HDMI)'],
     software: ['Работает без роутера и интернета', 'Хранит историю боёв локально', 'Экспорт результатов на флешку'],
@@ -378,7 +378,12 @@ const Index = () => {
                   </div>
                   <span className={`text-xs uppercase tracking-widest font-medium mb-1 ${k.highlight ? 'text-primary-foreground/70' : 'text-primary'}`}>{k.tag}</span>
                   <h3 className={`font-display font-bold text-3xl uppercase mb-2 ${k.highlight ? 'text-primary-foreground' : ''}`}>{k.name}</h3>
-                  <p className={`text-sm mb-6 ${k.highlight ? 'text-primary-foreground/80' : 'text-muted-foreground'}`}>{k.desc}</p>
+                  <p className={`text-sm mb-5 ${k.highlight ? 'text-primary-foreground/80' : 'text-muted-foreground'}`}>{k.desc}</p>
+
+                  <div className={`flex items-baseline gap-1 mb-6 pb-6 border-b ${k.highlight ? 'border-primary-foreground/20' : 'border-border'}`}>
+                    <span className={`font-display font-bold text-4xl ${k.highlight ? 'text-primary-foreground' : ''}`}>{k.price}</span>
+                    <span className={`text-lg font-display ${k.highlight ? 'text-primary-foreground/80' : 'text-muted-foreground'}`}>{k.period}</span>
+                  </div>
 
                   <div className={`text-xs uppercase tracking-widest font-medium mb-3 ${k.highlight ? 'text-primary-foreground/60' : 'text-muted-foreground'}`}>Оборудование</div>
                   <ul className="space-y-2 mb-5">
@@ -422,13 +427,19 @@ const Index = () => {
               <div className="bg-background border border-border rounded-lg p-6 mb-8">
                 <div className="text-xs uppercase tracking-widest text-muted-foreground mb-3">Ваш заказ</div>
                 {kits.filter((k) => k.name === selectedKit).map((k) => (
-                  <div key={k.name} className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded bg-primary/10 flex items-center justify-center shrink-0">
-                      <Icon name={k.icon} size={20} className="text-primary" />
+                  <div key={k.name}>
+                    <div className="flex items-center gap-3 mb-4">
+                      <div className="w-10 h-10 rounded bg-primary/10 flex items-center justify-center shrink-0">
+                        <Icon name={k.icon} size={20} className="text-primary" />
+                      </div>
+                      <div>
+                        <div className="font-display font-bold text-xl uppercase">{k.name} комплектация</div>
+                        <div className="text-xs text-muted-foreground">5 пультов + 3 лампы · {k.tag}</div>
+                      </div>
                     </div>
-                    <div>
-                      <div className="font-display font-bold text-xl uppercase">{k.name} комплектация</div>
-                      <div className="text-xs text-muted-foreground">5 пультов + 3 лампы · {k.tag}</div>
+                    <div className="flex items-baseline justify-between pt-4 border-t border-border">
+                      <span className="text-sm text-muted-foreground uppercase tracking-wide">Итого</span>
+                      <span className="font-display font-bold text-3xl text-primary">{k.price} {k.period}</span>
                     </div>
                   </div>
                 ))}
