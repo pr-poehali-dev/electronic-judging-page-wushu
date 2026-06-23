@@ -54,6 +54,12 @@ const plans = [
 const Index = () => {
   const [judges, setJudges] = useState([8.2, 8.5, 7.9]);
   const [total, setTotal] = useState(8.2);
+  const [selectedPlan, setSelectedPlan] = useState('Федерация');
+
+  const choosePlan = (name: string) => {
+    setSelectedPlan(name);
+    document.getElementById('buy')?.scrollIntoView({ behavior: 'smooth' });
+  };
 
   useEffect(() => {
     const id = setInterval(() => {
@@ -82,7 +88,7 @@ const Index = () => {
             <a href="#pricing" className="hover:text-foreground transition-colors">Тарифы</a>
           </nav>
           <Button asChild className="font-display uppercase tracking-wider">
-            <a href="#contact">Демо</a>
+            <a href="#buy">Купить</a>
           </Button>
         </div>
       </header>
@@ -108,7 +114,7 @@ const Index = () => {
             </p>
             <div className="flex flex-wrap gap-4 animate-fade-in" style={{ animationDelay: '0.3s' }}>
               <Button asChild size="lg" className="font-display uppercase tracking-wider text-base h-14 px-8 glow-red">
-                <a href="#contact">Запросить демо</a>
+                <a href="#buy">Купить систему</a>
               </Button>
               <Button asChild size="lg" variant="outline" className="font-display uppercase tracking-wider text-base h-14 px-8 border-border">
                 <a href="#features">Как это работает</a>
@@ -265,8 +271,8 @@ const Index = () => {
                     </li>
                   ))}
                 </ul>
-                <Button asChild variant={p.highlight ? 'secondary' : 'default'} className="font-display uppercase tracking-wider h-12">
-                  <a href="#contact">{p.price === 'Индивид.' ? 'Обсудить' : 'Подключить'}</a>
+                <Button onClick={() => choosePlan(p.name)} variant={p.highlight ? 'secondary' : 'default'} className="font-display uppercase tracking-wider h-12">
+                  {p.price === 'Индивид.' ? 'Обсудить' : 'Купить'}
                 </Button>
               </div>
             ))}
@@ -274,19 +280,30 @@ const Index = () => {
         </div>
       </section>
 
-      {/* CONTACT */}
-      <section id="contact" className="py-24 bg-card border-t border-border">
+      {/* BUY */}
+      <section id="buy" className="py-24 bg-card border-t border-border">
         <div className="container">
           <div className="grid lg:grid-cols-2 gap-12">
             <div>
-              <span className="text-primary font-medium text-sm uppercase tracking-widest">Контакты</span>
-              <h2 className="font-display font-bold uppercase text-4xl md:text-5xl mt-2 mb-6">Запишитесь<br />на демо</h2>
-              <p className="text-muted-foreground mb-8 max-w-md">Покажем систему на вашем турнире. Оставьте заявку — свяжемся в течение рабочего дня.</p>
+              <span className="text-primary font-medium text-sm uppercase tracking-widest">Оформление покупки</span>
+              <h2 className="font-display font-bold uppercase text-4xl md:text-5xl mt-2 mb-6">Подключите<br />систему</h2>
+              <p className="text-muted-foreground mb-8 max-w-md">Выберите тариф, заполните данные — и мы развернём SANDASCORE на вашей площадке. Оплата по счёту или картой.</p>
+
+              <div className="bg-background border border-border rounded-lg p-6 mb-8">
+                <div className="text-xs uppercase tracking-widest text-muted-foreground mb-3">Ваш заказ</div>
+                {plans.map((p) => p.name === selectedPlan && (
+                  <div key={p.name} className="flex items-baseline justify-between">
+                    <span className="font-display font-bold text-2xl uppercase">{p.name}</span>
+                    <span className="font-display font-bold text-2xl text-primary">{p.price}<span className="text-sm text-muted-foreground font-sans"> {p.period}</span></span>
+                  </div>
+                ))}
+              </div>
+
               <div className="space-y-4">
                 {[
-                  ['Phone', '+7 (999) 123-45-67'],
-                  ['Mail', 'hello@sandascore.ru'],
-                  ['Send', '@sandascore'],
+                  ['ShieldCheck', 'Безопасная оплата'],
+                  ['Headphones', 'Поддержка и обучение'],
+                  ['RefreshCw', 'Отмена в любой момент'],
                 ].map(([icon, val]) => (
                   <div key={val} className="flex items-center gap-3">
                     <div className="w-11 h-11 rounded bg-primary/10 flex items-center justify-center">
@@ -297,7 +314,23 @@ const Index = () => {
                 ))}
               </div>
             </div>
+
             <form className="bg-background border border-border rounded-lg p-8 space-y-5" onSubmit={(e) => e.preventDefault()}>
+              <div>
+                <label className="text-sm font-medium mb-2 block">Выберите тариф</label>
+                <div className="grid grid-cols-3 gap-2">
+                  {plans.map((p) => (
+                    <button
+                      type="button"
+                      key={p.name}
+                      onClick={() => setSelectedPlan(p.name)}
+                      className={`h-12 rounded border font-display uppercase text-sm tracking-wide transition-colors ${selectedPlan === p.name ? 'bg-primary border-primary text-primary-foreground' : 'bg-secondary border-border text-muted-foreground hover:border-primary/50'}`}
+                    >
+                      {p.name}
+                    </button>
+                  ))}
+                </div>
+              </div>
               <div>
                 <label className="text-sm font-medium mb-2 block">Имя</label>
                 <Input placeholder="Как к вам обращаться" className="bg-secondary border-border h-12" />
@@ -311,12 +344,14 @@ const Index = () => {
                 <Input placeholder="Федерация, клуб, событие" className="bg-secondary border-border h-12" />
               </div>
               <div>
-                <label className="text-sm font-medium mb-2 block">Комментарий</label>
-                <Textarea placeholder="Расскажите о вашем турнире" className="bg-secondary border-border min-h-[100px]" />
+                <label className="text-sm font-medium mb-2 block">Комментарий к заказу</label>
+                <Textarea placeholder="Особые пожелания, сроки запуска" className="bg-secondary border-border min-h-[90px]" />
               </div>
               <Button type="submit" size="lg" className="w-full font-display uppercase tracking-wider h-12 glow-red">
-                Отправить заявку
+                <Icon name="ShoppingCart" size={18} className="mr-2" />
+                Купить — {selectedPlan}
               </Button>
+              <p className="text-xs text-muted-foreground text-center">Нажимая кнопку, вы соглашаетесь с условиями оферты</p>
             </form>
           </div>
         </div>
