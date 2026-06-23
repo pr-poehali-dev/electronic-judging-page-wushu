@@ -7,6 +7,25 @@ import { Textarea } from '@/components/ui/textarea';
 const HERO_IMG =
   'https://cdn.poehali.dev/projects/0a57a3a1-a3a7-4fc8-9ea3-5708ec24ae6a/files/e33bd3da-bc31-488a-8097-ed31b323f4db.jpg';
 
+const gallery = [
+  {
+    src: 'https://cdn.poehali.dev/projects/0a57a3a1-a3a7-4fc8-9ea3-5708ec24ae6a/files/654f0d90-a1bd-4803-ac08-24f47539151b.jpg',
+    caption: 'Судейская бригада с пультами',
+  },
+  {
+    src: 'https://cdn.poehali.dev/projects/0a57a3a1-a3a7-4fc8-9ea3-5708ec24ae6a/files/a215745f-9903-4a5b-88a5-68ee4ff2c47b.jpg',
+    caption: 'Поединок на турнире',
+  },
+  {
+    src: 'https://cdn.poehali.dev/projects/0a57a3a1-a3a7-4fc8-9ea3-5708ec24ae6a/files/91c0aa1d-0b1f-4089-8c23-ee298a1ed947.jpg',
+    caption: 'Электронное табло результата',
+  },
+  {
+    src: 'https://cdn.poehali.dev/projects/0a57a3a1-a3a7-4fc8-9ea3-5708ec24ae6a/files/3421ffe8-9cc6-4770-a6d0-4a91798230dc.jpg',
+    caption: 'Объявление победителя',
+  },
+];
+
 const problems = [
   { icon: 'EyeOff', title: 'Субъективность', text: 'Оценки судей расходятся, а ручной подсчёт скрывает реальную картину боя.' },
   { icon: 'Clock', title: 'Задержки', text: 'Бумажные протоколы и сверка баллов тормозят турнир и нервируют команды.' },
@@ -76,6 +95,7 @@ const Index = () => {
   const [judges, setJudges] = useState([8.2, 8.5, 7.9]);
   const [total, setTotal] = useState(8.2);
   const [selectedKit, setSelectedKit] = useState('Проводная');
+  const [lightbox, setLightbox] = useState<number | null>(null);
 
   const chooseKit = (name: string) => {
     setSelectedKit(name);
@@ -251,7 +271,7 @@ const Index = () => {
             <span className="text-accent font-medium text-sm uppercase tracking-widest">Реальные турниры</span>
             <h2 className="font-display font-bold uppercase text-4xl md:text-5xl mt-2">Проверено на ринге</h2>
           </div>
-          <div className="grid md:grid-cols-3 gap-6">
+          <div className="grid md:grid-cols-3 gap-6 mb-14">
             {cases.map((c) => (
               <div key={c.title} className="bg-background border border-border rounded-lg p-8 flex flex-col hover:border-primary/50 transition-colors">
                 <span className="text-xs uppercase tracking-widest text-primary font-medium mb-4">{c.tag}</span>
@@ -264,8 +284,76 @@ const Index = () => {
               </div>
             ))}
           </div>
+
+          {/* GALLERY */}
+          <div>
+            <div className="flex items-center gap-3 mb-6">
+              <div className="h-px flex-1 bg-border" />
+              <span className="text-xs uppercase tracking-widest text-muted-foreground font-medium">Фото с турниров</span>
+              <div className="h-px flex-1 bg-border" />
+            </div>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+              {gallery.map((img, i) => (
+                <button
+                  key={i}
+                  onClick={() => setLightbox(i)}
+                  className="group relative rounded-lg overflow-hidden aspect-square bg-secondary border border-border hover:border-primary/50 transition-all"
+                >
+                  <img
+                    src={img.src}
+                    alt={img.caption}
+                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                  />
+                  <div className="absolute inset-0 bg-background/0 group-hover:bg-background/50 transition-all flex items-end p-3 opacity-0 group-hover:opacity-100">
+                    <span className="text-xs font-medium text-foreground leading-tight">{img.caption}</span>
+                  </div>
+                  <div className="absolute top-2 right-2 w-7 h-7 rounded bg-background/60 backdrop-blur-sm flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                    <Icon name="ZoomIn" size={14} className="text-foreground" />
+                  </div>
+                </button>
+              ))}
+            </div>
+          </div>
         </div>
       </section>
+
+      {/* LIGHTBOX */}
+      {lightbox !== null && (
+        <div
+          className="fixed inset-0 z-[100] bg-background/95 backdrop-blur-md flex items-center justify-center p-4"
+          onClick={() => setLightbox(null)}
+        >
+          <button
+            className="absolute top-5 right-5 w-11 h-11 rounded border border-border bg-card flex items-center justify-center hover:border-primary transition-colors"
+            onClick={() => setLightbox(null)}
+          >
+            <Icon name="X" size={20} />
+          </button>
+          <button
+            className="absolute left-5 top-1/2 -translate-y-1/2 w-11 h-11 rounded border border-border bg-card flex items-center justify-center hover:border-primary transition-colors"
+            onClick={(e) => { e.stopPropagation(); setLightbox((lightbox - 1 + gallery.length) % gallery.length); }}
+          >
+            <Icon name="ChevronLeft" size={20} />
+          </button>
+          <button
+            className="absolute right-5 top-1/2 -translate-y-1/2 w-11 h-11 rounded border border-border bg-card flex items-center justify-center hover:border-primary transition-colors"
+            onClick={(e) => { e.stopPropagation(); setLightbox((lightbox + 1) % gallery.length); }}
+          >
+            <Icon name="ChevronRight" size={20} />
+          </button>
+          <div className="max-w-4xl w-full" onClick={(e) => e.stopPropagation()}>
+            <img
+              src={gallery[lightbox].src}
+              alt={gallery[lightbox].caption}
+              className="w-full max-h-[75vh] object-contain rounded-lg animate-scale-in"
+            />
+            <div className="flex items-center justify-between mt-4">
+              <p className="text-sm text-muted-foreground">{gallery[lightbox].caption}</p>
+              <span className="text-xs text-muted-foreground font-display uppercase">{lightbox + 1} / {gallery.length}</span>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* KITS */}
       <section id="pricing" className="py-24">
