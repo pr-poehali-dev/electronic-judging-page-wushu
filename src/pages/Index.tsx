@@ -36,28 +36,49 @@ const cases = [
   { tag: 'Первенство клуба', title: 'Трансляция счёта', text: 'Зрители следили за баллами в прямом эфире на табло и в стриме.', stat: '100%', statLabel: 'прозрачность' },
 ];
 
-const plans = [
+const kits = [
   {
-    name: 'Клуб', price: '9 900', period: '₽ / мес', desc: 'Для секций и локальных турниров',
-    features: ['До 2 рингов', '3 судьи онлайн', 'Табло для зала', 'Базовая аналитика', 'Email-поддержка'], highlight: false,
+    name: 'Беспроводная',
+    icon: 'Wifi',
+    tag: 'Мобильность',
+    price: 'Узнать цену',
+    period: '',
+    desc: 'Для выездных турниров и залов без кабельной инфраструктуры',
+    hardware: ['5 беспроводных судейских пультов', '3 светодиодные лампы результата (Wi-Fi)', 'Центральный роутер с точкой доступа', 'Планшет-табло для главного судьи'],
+    software: ['Синхронизация до 50 мс', 'Работает в локальной сети без интернета', 'Заряда батарей на 8 часов'],
+    highlight: false,
   },
   {
-    name: 'Федерация', price: '24 900', period: '₽ / мес', desc: 'Оптимально для региональных турниров',
-    features: ['До 6 рингов', 'Неограниченно судей', 'Живые трансляции счёта', 'Полная аналитика и архив', 'Приоритетная поддержка 24/7'], highlight: true,
+    name: 'Проводная',
+    icon: 'Cable',
+    tag: 'Надёжность',
+    price: 'Узнать цену',
+    period: '',
+    desc: 'Для стационарных площадок и официальных соревнований',
+    hardware: ['5 проводных судейских пультов (USB)', '3 лампы результата (кабель)', 'Центральный коммутатор', 'Планшет-табло для главного судьи'],
+    software: ['Синхронизация до 5 мс', 'Нет радиопомех — стабильность 100%', 'Не требует зарядки пультов'],
+    highlight: true,
   },
   {
-    name: 'Чемпионат', price: 'Индивид.', period: '', desc: 'Крупные турниры под ключ',
-    features: ['Безлимит рингов', 'Выезд инженера', 'Интеграция со стримингом', 'Кастомные правила судейства', 'Персональный менеджер'], highlight: false,
+    name: 'Офлайн',
+    icon: 'HardDrive',
+    tag: 'Автономность',
+    price: 'Узнать цену',
+    period: '',
+    desc: 'Полностью автономный комплект без сетевой инфраструктуры',
+    hardware: ['5 автономных пультов с дисплеем', '3 лампы результата (Bluetooth)', 'Мини-сервер на базе Raspberry Pi', 'Экранный модуль табло (HDMI)'],
+    software: ['Работает без роутера и интернета', 'Хранит историю боёв локально', 'Экспорт результатов на флешку'],
+    highlight: false,
   },
 ];
 
 const Index = () => {
   const [judges, setJudges] = useState([8.2, 8.5, 7.9]);
   const [total, setTotal] = useState(8.2);
-  const [selectedPlan, setSelectedPlan] = useState('Федерация');
+  const [selectedKit, setSelectedKit] = useState('Проводная');
 
-  const choosePlan = (name: string) => {
-    setSelectedPlan(name);
+  const chooseKit = (name: string) => {
+    setSelectedKit(name);
     document.getElementById('buy')?.scrollIntoView({ behavior: 'smooth' });
   };
 
@@ -246,34 +267,55 @@ const Index = () => {
         </div>
       </section>
 
-      {/* PRICING */}
+      {/* KITS */}
       <section id="pricing" className="py-24">
         <div className="container">
           <div className="max-w-2xl mb-14">
-            <span className="text-primary font-medium text-sm uppercase tracking-widest">Тарифы</span>
-            <h2 className="font-display font-bold uppercase text-4xl md:text-5xl mt-2">Выберите формат турнира</h2>
+            <span className="text-primary font-medium text-sm uppercase tracking-widest">Комплектации</span>
+            <h2 className="font-display font-bold uppercase text-4xl md:text-5xl mt-2">Выберите вариант системы</h2>
+            <p className="text-muted-foreground mt-4">Каждый комплект включает 5 судейских пультов и лампы для показа результата. Отличается тип подключения.</p>
           </div>
           <div className="grid md:grid-cols-3 gap-6">
-            {plans.map((p) => (
-              <div key={p.name} className={`rounded-lg p-8 flex flex-col border ${p.highlight ? 'bg-primary border-primary glow-red md:scale-[1.04]' : 'bg-card border-border'}`}>
-                {p.highlight && <span className="self-start text-xs uppercase tracking-widest font-semibold bg-background/20 text-primary-foreground px-3 py-1 rounded mb-4">Популярный</span>}
-                <h3 className={`font-display font-bold text-2xl uppercase ${p.highlight ? 'text-primary-foreground' : ''}`}>{p.name}</h3>
-                <p className={`text-sm mb-6 ${p.highlight ? 'text-primary-foreground/80' : 'text-muted-foreground'}`}>{p.desc}</p>
-                <div className="flex items-baseline gap-1 mb-6">
-                  <span className={`font-display font-bold text-4xl ${p.highlight ? 'text-primary-foreground' : ''}`}>{p.price}</span>
-                  <span className={`text-sm ${p.highlight ? 'text-primary-foreground/80' : 'text-muted-foreground'}`}>{p.period}</span>
+            {kits.map((k) => (
+              <div key={k.name} className={`rounded-lg flex flex-col border overflow-hidden transition-all ${k.highlight ? 'bg-primary border-primary glow-red md:scale-[1.04]' : 'bg-card border-border'}`}>
+                {k.highlight && (
+                  <div className="bg-background/20 px-8 py-2 flex items-center gap-2">
+                    <span className="w-2 h-2 bg-primary-foreground rounded-full animate-pulse" />
+                    <span className="text-xs uppercase tracking-widest font-semibold text-primary-foreground">Рекомендуем</span>
+                  </div>
+                )}
+                <div className="p-8 flex flex-col flex-1">
+                  <div className={`w-14 h-14 rounded flex items-center justify-center mb-5 ${k.highlight ? 'bg-background/20' : 'bg-primary/10'}`}>
+                    <Icon name={k.icon} size={28} className={k.highlight ? 'text-primary-foreground' : 'text-primary'} />
+                  </div>
+                  <span className={`text-xs uppercase tracking-widest font-medium mb-1 ${k.highlight ? 'text-primary-foreground/70' : 'text-primary'}`}>{k.tag}</span>
+                  <h3 className={`font-display font-bold text-3xl uppercase mb-2 ${k.highlight ? 'text-primary-foreground' : ''}`}>{k.name}</h3>
+                  <p className={`text-sm mb-6 ${k.highlight ? 'text-primary-foreground/80' : 'text-muted-foreground'}`}>{k.desc}</p>
+
+                  <div className={`text-xs uppercase tracking-widest font-medium mb-3 ${k.highlight ? 'text-primary-foreground/60' : 'text-muted-foreground'}`}>Оборудование</div>
+                  <ul className="space-y-2 mb-5">
+                    {k.hardware.map((h) => (
+                      <li key={h} className="flex items-start gap-2 text-sm">
+                        <Icon name="Package" size={16} className={k.highlight ? 'text-primary-foreground shrink-0 mt-0.5' : 'text-primary shrink-0 mt-0.5'} />
+                        <span className={k.highlight ? 'text-primary-foreground' : ''}>{h}</span>
+                      </li>
+                    ))}
+                  </ul>
+
+                  <div className={`text-xs uppercase tracking-widest font-medium mb-3 ${k.highlight ? 'text-primary-foreground/60' : 'text-muted-foreground'}`}>Характеристики</div>
+                  <ul className="space-y-2 flex-1 mb-8">
+                    {k.software.map((s) => (
+                      <li key={s} className="flex items-start gap-2 text-sm">
+                        <Icon name="Check" size={16} className={k.highlight ? 'text-primary-foreground shrink-0 mt-0.5' : 'text-primary shrink-0 mt-0.5'} />
+                        <span className={k.highlight ? 'text-primary-foreground' : ''}>{s}</span>
+                      </li>
+                    ))}
+                  </ul>
+
+                  <Button onClick={() => chooseKit(k.name)} variant={k.highlight ? 'secondary' : 'default'} className="font-display uppercase tracking-wider h-12">
+                    Выбрать — {k.name}
+                  </Button>
                 </div>
-                <ul className="space-y-3 flex-1 mb-8">
-                  {p.features.map((f) => (
-                    <li key={f} className="flex items-start gap-2 text-sm">
-                      <Icon name="Check" size={18} className={p.highlight ? 'text-primary-foreground shrink-0' : 'text-primary shrink-0'} />
-                      <span className={p.highlight ? 'text-primary-foreground' : ''}>{f}</span>
-                    </li>
-                  ))}
-                </ul>
-                <Button onClick={() => choosePlan(p.name)} variant={p.highlight ? 'secondary' : 'default'} className="font-display uppercase tracking-wider h-12">
-                  {p.price === 'Индивид.' ? 'Обсудить' : 'Купить'}
-                </Button>
               </div>
             ))}
           </div>
@@ -287,14 +329,19 @@ const Index = () => {
             <div>
               <span className="text-primary font-medium text-sm uppercase tracking-widest">Оформление покупки</span>
               <h2 className="font-display font-bold uppercase text-4xl md:text-5xl mt-2 mb-6">Подключите<br />систему</h2>
-              <p className="text-muted-foreground mb-8 max-w-md">Выберите тариф, заполните данные — и мы развернём SANDASCORE на вашей площадке. Оплата по счёту или картой.</p>
+              <p className="text-muted-foreground mb-8 max-w-md">Выберите комплектацию, заполните данные — мы свяжемся для уточнения деталей и выставим счёт.</p>
 
               <div className="bg-background border border-border rounded-lg p-6 mb-8">
                 <div className="text-xs uppercase tracking-widest text-muted-foreground mb-3">Ваш заказ</div>
-                {plans.map((p) => p.name === selectedPlan && (
-                  <div key={p.name} className="flex items-baseline justify-between">
-                    <span className="font-display font-bold text-2xl uppercase">{p.name}</span>
-                    <span className="font-display font-bold text-2xl text-primary">{p.price}<span className="text-sm text-muted-foreground font-sans"> {p.period}</span></span>
+                {kits.filter((k) => k.name === selectedKit).map((k) => (
+                  <div key={k.name} className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded bg-primary/10 flex items-center justify-center shrink-0">
+                      <Icon name={k.icon} size={20} className="text-primary" />
+                    </div>
+                    <div>
+                      <div className="font-display font-bold text-xl uppercase">{k.name} комплектация</div>
+                      <div className="text-xs text-muted-foreground">5 пультов + 3 лампы · {k.tag}</div>
+                    </div>
                   </div>
                 ))}
               </div>
@@ -317,16 +364,16 @@ const Index = () => {
 
             <form className="bg-background border border-border rounded-lg p-8 space-y-5" onSubmit={(e) => e.preventDefault()}>
               <div>
-                <label className="text-sm font-medium mb-2 block">Выберите тариф</label>
+                <label className="text-sm font-medium mb-2 block">Комплектация</label>
                 <div className="grid grid-cols-3 gap-2">
-                  {plans.map((p) => (
+                  {kits.map((k) => (
                     <button
                       type="button"
-                      key={p.name}
-                      onClick={() => setSelectedPlan(p.name)}
-                      className={`h-12 rounded border font-display uppercase text-sm tracking-wide transition-colors ${selectedPlan === p.name ? 'bg-primary border-primary text-primary-foreground' : 'bg-secondary border-border text-muted-foreground hover:border-primary/50'}`}
+                      key={k.name}
+                      onClick={() => setSelectedKit(k.name)}
+                      className={`h-12 rounded border font-display uppercase text-sm tracking-wide transition-colors ${selectedKit === k.name ? 'bg-primary border-primary text-primary-foreground' : 'bg-secondary border-border text-muted-foreground hover:border-primary/50'}`}
                     >
-                      {p.name}
+                      {k.name}
                     </button>
                   ))}
                 </div>
@@ -349,7 +396,7 @@ const Index = () => {
               </div>
               <Button type="submit" size="lg" className="w-full font-display uppercase tracking-wider h-12 glow-red">
                 <Icon name="ShoppingCart" size={18} className="mr-2" />
-                Купить — {selectedPlan}
+                Купить — {selectedKit}
               </Button>
               <p className="text-xs text-muted-foreground text-center">Нажимая кнопку, вы соглашаетесь с условиями оферты</p>
             </form>
