@@ -1,15 +1,339 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+import { useState, useEffect } from 'react';
+import Icon from '@/components/ui/icon';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+
+const HERO_IMG =
+  'https://cdn.poehali.dev/projects/0a57a3a1-a3a7-4fc8-9ea3-5708ec24ae6a/files/e33bd3da-bc31-488a-8097-ed31b323f4db.jpg';
+
+const problems = [
+  { icon: 'EyeOff', title: 'Субъективность', text: 'Оценки судей расходятся, а ручной подсчёт скрывает реальную картину боя.' },
+  { icon: 'Clock', title: 'Задержки', text: 'Бумажные протоколы и сверка баллов тормозят турнир и нервируют команды.' },
+  { icon: 'TriangleAlert', title: 'Споры и ошибки', text: 'Опротестования решений из-за человеческого фактора подрывают доверие.' },
+  { icon: 'FileX', title: 'Нет прозрачности', text: 'Зрители и тренеры не видят, как формируется итоговый счёт поединка.' },
+];
+
+const features = [
+  { icon: 'Users', title: 'Синхронное судейство', text: 'Несколько судей выставляют оценки одновременно — система мгновенно сводит результат.' },
+  { icon: 'Zap', title: 'Результат за секунды', text: 'Итоговый счёт раунда виден сразу после удара гонга. Никаких бумаг.' },
+  { icon: 'ShieldCheck', title: 'Защита от споров', text: 'Каждое действие фиксируется с таймкодом — полный аудит поединка.' },
+  { icon: 'Monitor', title: 'Табло для зала', text: 'Живой счёт выводится на большой экран для зрителей и комментаторов.' },
+  { icon: 'Wifi', title: 'Работает без интернета', text: 'Локальная сеть на площадке — стабильно даже в спортзале без связи.' },
+  { icon: 'ChartColumn', title: 'Аналитика и архив', text: 'Статистика бойцов, история турниров и выгрузка протоколов в один клик.' },
+];
+
+const steps = [
+  { num: '01', title: 'Судьи подключаются', text: 'Каждый судья получает планшет или пульт со своим профилем.' },
+  { num: '02', title: 'Оценивают в реальном времени', text: 'Баллы за удары, броски и приёмы выставляются параллельно.' },
+  { num: '03', title: 'Система сводит результат', text: 'Алгоритм усредняет и проверяет оценки по правилам саньда.' },
+  { num: '04', title: 'Счёт на табло', text: 'Объективный итог мгновенно появляется на экране зала.' },
+];
+
+const cases = [
+  { tag: 'Чемпионат региона', title: '64 боя за день', text: 'Турнир на 4 ринга прошёл без единого спора по баллам. Экономия 3 часов.', stat: '0', statLabel: 'опротестований' },
+  { tag: 'Кубок федерации', title: '5 судей онлайн', text: 'Синхронная работа бригады судей ускорила поединки в 2 раза.', stat: '2×', statLabel: 'быстрее' },
+  { tag: 'Первенство клуба', title: 'Трансляция счёта', text: 'Зрители следили за баллами в прямом эфире на табло и в стриме.', stat: '100%', statLabel: 'прозрачность' },
+];
+
+const plans = [
+  {
+    name: 'Клуб', price: '9 900', period: '₽ / мес', desc: 'Для секций и локальных турниров',
+    features: ['До 2 рингов', '3 судьи онлайн', 'Табло для зала', 'Базовая аналитика', 'Email-поддержка'], highlight: false,
+  },
+  {
+    name: 'Федерация', price: '24 900', period: '₽ / мес', desc: 'Оптимально для региональных турниров',
+    features: ['До 6 рингов', 'Неограниченно судей', 'Живые трансляции счёта', 'Полная аналитика и архив', 'Приоритетная поддержка 24/7'], highlight: true,
+  },
+  {
+    name: 'Чемпионат', price: 'Индивид.', period: '', desc: 'Крупные турниры под ключ',
+    features: ['Безлимит рингов', 'Выезд инженера', 'Интеграция со стримингом', 'Кастомные правила судейства', 'Персональный менеджер'], highlight: false,
+  },
+];
 
 const Index = () => {
+  const [judges, setJudges] = useState([8.2, 8.5, 7.9]);
+  const [total, setTotal] = useState(8.2);
+
+  useEffect(() => {
+    const id = setInterval(() => {
+      const next = [0, 1, 2].map(() => +(7 + Math.random() * 2.5).toFixed(1));
+      setJudges(next);
+      setTotal(+(next.reduce((a, b) => a + b, 0) / next.length).toFixed(1));
+    }, 2000);
+    return () => clearInterval(id);
+  }, []);
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold mb-4 color-black text-black">Добро пожаловать!</h1>
-        <p className="text-xl text-gray-600">тут будет отображаться ваш проект</p>
-      </div>
-      <span className="absolute bottom-8 left-1/2 -translate-x-1/2 inline-block bg-[#FF6637] text-white text-sm px-4 py-2 rounded-full whitespace-nowrap">
-        Подождите 5 минут, Юра создает первую версию проекта с нуля
-      </span>
+    <div className="min-h-screen bg-background text-foreground overflow-x-hidden">
+      {/* NAV */}
+      <header className="fixed top-0 inset-x-0 z-50 backdrop-blur-md bg-background/70 border-b border-border">
+        <div className="container flex items-center justify-between h-16">
+          <div className="flex items-center gap-2">
+            <div className="w-9 h-9 bg-primary flex items-center justify-center glow-red">
+              <Icon name="Swords" size={20} className="text-primary-foreground" />
+            </div>
+            <span className="font-display font-bold text-xl tracking-wide">SANDA<span className="text-primary">SCORE</span></span>
+          </div>
+          <nav className="hidden md:flex items-center gap-8 text-sm font-medium text-muted-foreground">
+            <a href="#problem" className="hover:text-foreground transition-colors">Проблема</a>
+            <a href="#features" className="hover:text-foreground transition-colors">Возможности</a>
+            <a href="#cases" className="hover:text-foreground transition-colors">Кейсы</a>
+            <a href="#pricing" className="hover:text-foreground transition-colors">Тарифы</a>
+          </nav>
+          <Button asChild className="font-display uppercase tracking-wider">
+            <a href="#contact">Демо</a>
+          </Button>
+        </div>
+      </header>
+
+      {/* HERO */}
+      <section className="relative min-h-screen flex items-center diag-clip">
+        <div className="absolute inset-0">
+          <img src={HERO_IMG} alt="Ушу саньда" className="w-full h-full object-cover opacity-40" />
+          <div className="absolute inset-0 bg-gradient-to-r from-background via-background/80 to-background/30" />
+        </div>
+        <div className="absolute inset-0 grid-texture opacity-30" />
+        <div className="container relative z-10 pt-24 pb-32">
+          <div className="max-w-3xl">
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 border border-primary/40 bg-primary/10 text-primary text-sm font-medium mb-6 animate-fade-in">
+              <span className="w-2 h-2 bg-primary rounded-full animate-pulse" />
+              Электронное судейство ушу саньда
+            </div>
+            <h1 className="font-display font-bold uppercase leading-[0.95] text-5xl sm:text-6xl lg:text-7xl mb-6 animate-fade-in" style={{ animationDelay: '0.1s' }}>
+              Точность<br />каждого <span className="text-primary">удара</span>
+            </h1>
+            <p className="text-lg text-muted-foreground max-w-xl mb-8 animate-fade-in" style={{ animationDelay: '0.2s' }}>
+              Система синхронного судейства, где несколько судей оценивают бой одновременно, а итоговый счёт появляется на табло за секунды.
+            </p>
+            <div className="flex flex-wrap gap-4 animate-fade-in" style={{ animationDelay: '0.3s' }}>
+              <Button asChild size="lg" className="font-display uppercase tracking-wider text-base h-14 px-8 glow-red">
+                <a href="#contact">Запросить демо</a>
+              </Button>
+              <Button asChild size="lg" variant="outline" className="font-display uppercase tracking-wider text-base h-14 px-8 border-border">
+                <a href="#features">Как это работает</a>
+              </Button>
+            </div>
+            <div className="flex gap-8 mt-12 animate-fade-in" style={{ animationDelay: '0.4s' }}>
+              {[['0', 'споров по баллам'], ['2×', 'быстрее турниры'], ['5+', 'судей онлайн']].map(([n, l]) => (
+                <div key={l}>
+                  <div className="font-display font-bold text-3xl text-primary">{n}</div>
+                  <div className="text-xs text-muted-foreground uppercase tracking-wide">{l}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* LIVE SYNC DEMO */}
+      <section className="py-20 -mt-16 relative z-20">
+        <div className="container">
+          <div className="bg-card border border-border rounded-lg p-8 md:p-12 glow-red animate-scale-in">
+            <div className="flex flex-col lg:flex-row items-center gap-10">
+              <div className="flex-1">
+                <span className="text-primary font-medium text-sm uppercase tracking-widest">Live · синхронизация</span>
+                <h2 className="font-display font-bold uppercase text-3xl md:text-4xl mt-2 mb-4">Оценки судей в реальном времени</h2>
+                <p className="text-muted-foreground">Каждый судья выставляет балл независимо. Система мгновенно сводит результат по правилам саньда — без задержек и ручного подсчёта.</p>
+              </div>
+              <div className="flex-1 w-full">
+                <div className="grid grid-cols-3 gap-3 mb-4">
+                  {judges.map((j, i) => (
+                    <div key={i} className="bg-secondary border border-border rounded p-4 text-center animate-flash" style={{ animationDelay: `${i * 0.1}s` }}>
+                      <div className="text-xs text-muted-foreground uppercase mb-1">Судья {i + 1}</div>
+                      <div className="font-display font-bold text-3xl tabular-nums">{j.toFixed(1)}</div>
+                    </div>
+                  ))}
+                </div>
+                <div className="bg-primary rounded p-6 text-center glow-red">
+                  <div className="text-xs text-primary-foreground/80 uppercase tracking-widest mb-1">Итоговый счёт раунда</div>
+                  <div className="font-display font-bold text-5xl text-primary-foreground tabular-nums animate-pulse-score">{total.toFixed(1)}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* PROBLEM */}
+      <section id="problem" className="py-24">
+        <div className="container">
+          <div className="max-w-2xl mb-14">
+            <span className="text-primary font-medium text-sm uppercase tracking-widest">Проблема</span>
+            <h2 className="font-display font-bold uppercase text-4xl md:text-5xl mt-2">Старое судейство тормозит спорт</h2>
+            <p className="text-muted-foreground mt-4">Ручной подсчёт баллов в саньда порождает споры, ошибки и потерю времени на каждом турнире.</p>
+          </div>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
+            {problems.map((p) => (
+              <div key={p.title} className="bg-card border border-border rounded-lg p-6 hover:border-primary/50 transition-colors group">
+                <div className="w-12 h-12 rounded bg-primary/10 flex items-center justify-center mb-4 group-hover:bg-primary/20 transition-colors">
+                  <Icon name={p.icon} size={24} className="text-primary" />
+                </div>
+                <h3 className="font-display font-semibold text-lg uppercase mb-2">{p.title}</h3>
+                <p className="text-sm text-muted-foreground">{p.text}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* SOLUTION / HOW */}
+      <section className="py-24 bg-card border-y border-border">
+        <div className="container">
+          <div className="max-w-2xl mb-14">
+            <span className="text-accent font-medium text-sm uppercase tracking-widest">Решение</span>
+            <h2 className="font-display font-bold uppercase text-4xl md:text-5xl mt-2">Как работает SANDA<span className="text-primary">SCORE</span></h2>
+          </div>
+          <div className="grid md:grid-cols-4 gap-6">
+            {steps.map((s) => (
+              <div key={s.num} className="relative">
+                <div className="font-display font-bold text-6xl text-stroke mb-3">{s.num}</div>
+                <h3 className="font-display font-semibold text-lg uppercase mb-2">{s.title}</h3>
+                <p className="text-sm text-muted-foreground">{s.text}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* FEATURES */}
+      <section id="features" className="py-24">
+        <div className="container">
+          <div className="max-w-2xl mb-14">
+            <span className="text-primary font-medium text-sm uppercase tracking-widest">Возможности</span>
+            <h2 className="font-display font-bold uppercase text-4xl md:text-5xl mt-2">Всё для честного боя</h2>
+          </div>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+            {features.map((f) => (
+              <div key={f.title} className="bg-card border border-border rounded-lg p-7 hover:border-primary/50 hover:-translate-y-1 transition-all">
+                <div className="w-12 h-12 rounded bg-primary flex items-center justify-center mb-5">
+                  <Icon name={f.icon} size={24} className="text-primary-foreground" />
+                </div>
+                <h3 className="font-display font-semibold text-xl uppercase mb-2">{f.title}</h3>
+                <p className="text-sm text-muted-foreground">{f.text}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* CASES */}
+      <section id="cases" className="py-24 bg-card border-y border-border">
+        <div className="container">
+          <div className="max-w-2xl mb-14">
+            <span className="text-accent font-medium text-sm uppercase tracking-widest">Реальные турниры</span>
+            <h2 className="font-display font-bold uppercase text-4xl md:text-5xl mt-2">Проверено на ринге</h2>
+          </div>
+          <div className="grid md:grid-cols-3 gap-6">
+            {cases.map((c) => (
+              <div key={c.title} className="bg-background border border-border rounded-lg p-8 flex flex-col hover:border-primary/50 transition-colors">
+                <span className="text-xs uppercase tracking-widest text-primary font-medium mb-4">{c.tag}</span>
+                <h3 className="font-display font-bold text-2xl uppercase mb-3">{c.title}</h3>
+                <p className="text-sm text-muted-foreground flex-1">{c.text}</p>
+                <div className="mt-6 pt-6 border-t border-border flex items-baseline gap-2">
+                  <span className="font-display font-bold text-4xl text-primary">{c.stat}</span>
+                  <span className="text-sm text-muted-foreground uppercase">{c.statLabel}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* PRICING */}
+      <section id="pricing" className="py-24">
+        <div className="container">
+          <div className="max-w-2xl mb-14">
+            <span className="text-primary font-medium text-sm uppercase tracking-widest">Тарифы</span>
+            <h2 className="font-display font-bold uppercase text-4xl md:text-5xl mt-2">Выберите формат турнира</h2>
+          </div>
+          <div className="grid md:grid-cols-3 gap-6">
+            {plans.map((p) => (
+              <div key={p.name} className={`rounded-lg p-8 flex flex-col border ${p.highlight ? 'bg-primary border-primary glow-red md:scale-[1.04]' : 'bg-card border-border'}`}>
+                {p.highlight && <span className="self-start text-xs uppercase tracking-widest font-semibold bg-background/20 text-primary-foreground px-3 py-1 rounded mb-4">Популярный</span>}
+                <h3 className={`font-display font-bold text-2xl uppercase ${p.highlight ? 'text-primary-foreground' : ''}`}>{p.name}</h3>
+                <p className={`text-sm mb-6 ${p.highlight ? 'text-primary-foreground/80' : 'text-muted-foreground'}`}>{p.desc}</p>
+                <div className="flex items-baseline gap-1 mb-6">
+                  <span className={`font-display font-bold text-4xl ${p.highlight ? 'text-primary-foreground' : ''}`}>{p.price}</span>
+                  <span className={`text-sm ${p.highlight ? 'text-primary-foreground/80' : 'text-muted-foreground'}`}>{p.period}</span>
+                </div>
+                <ul className="space-y-3 flex-1 mb-8">
+                  {p.features.map((f) => (
+                    <li key={f} className="flex items-start gap-2 text-sm">
+                      <Icon name="Check" size={18} className={p.highlight ? 'text-primary-foreground shrink-0' : 'text-primary shrink-0'} />
+                      <span className={p.highlight ? 'text-primary-foreground' : ''}>{f}</span>
+                    </li>
+                  ))}
+                </ul>
+                <Button asChild variant={p.highlight ? 'secondary' : 'default'} className="font-display uppercase tracking-wider h-12">
+                  <a href="#contact">{p.price === 'Индивид.' ? 'Обсудить' : 'Подключить'}</a>
+                </Button>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* CONTACT */}
+      <section id="contact" className="py-24 bg-card border-t border-border">
+        <div className="container">
+          <div className="grid lg:grid-cols-2 gap-12">
+            <div>
+              <span className="text-primary font-medium text-sm uppercase tracking-widest">Контакты</span>
+              <h2 className="font-display font-bold uppercase text-4xl md:text-5xl mt-2 mb-6">Запишитесь<br />на демо</h2>
+              <p className="text-muted-foreground mb-8 max-w-md">Покажем систему на вашем турнире. Оставьте заявку — свяжемся в течение рабочего дня.</p>
+              <div className="space-y-4">
+                {[
+                  ['Phone', '+7 (999) 123-45-67'],
+                  ['Mail', 'hello@sandascore.ru'],
+                  ['Send', '@sandascore'],
+                ].map(([icon, val]) => (
+                  <div key={val} className="flex items-center gap-3">
+                    <div className="w-11 h-11 rounded bg-primary/10 flex items-center justify-center">
+                      <Icon name={icon} size={20} className="text-primary" />
+                    </div>
+                    <span className="font-medium">{val}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <form className="bg-background border border-border rounded-lg p-8 space-y-5" onSubmit={(e) => e.preventDefault()}>
+              <div>
+                <label className="text-sm font-medium mb-2 block">Имя</label>
+                <Input placeholder="Как к вам обращаться" className="bg-secondary border-border h-12" />
+              </div>
+              <div>
+                <label className="text-sm font-medium mb-2 block">Телефон или email</label>
+                <Input placeholder="+7 ___ ___-__-__" className="bg-secondary border-border h-12" />
+              </div>
+              <div>
+                <label className="text-sm font-medium mb-2 block">Организация / турнир</label>
+                <Input placeholder="Федерация, клуб, событие" className="bg-secondary border-border h-12" />
+              </div>
+              <div>
+                <label className="text-sm font-medium mb-2 block">Комментарий</label>
+                <Textarea placeholder="Расскажите о вашем турнире" className="bg-secondary border-border min-h-[100px]" />
+              </div>
+              <Button type="submit" size="lg" className="w-full font-display uppercase tracking-wider h-12 glow-red">
+                Отправить заявку
+              </Button>
+            </form>
+          </div>
+        </div>
+      </section>
+
+      {/* FOOTER */}
+      <footer className="border-t border-border py-10">
+        <div className="container flex flex-col md:flex-row items-center justify-between gap-4">
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-8 bg-primary flex items-center justify-center">
+              <Icon name="Swords" size={18} className="text-primary-foreground" />
+            </div>
+            <span className="font-display font-bold tracking-wide">SANDA<span className="text-primary">SCORE</span></span>
+          </div>
+          <p className="text-sm text-muted-foreground">© 2026 SANDASCORE · Электронное судейство ушу саньда</p>
+        </div>
+      </footer>
     </div>
   );
 };
